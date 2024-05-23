@@ -1,0 +1,8 @@
+version: '3'
+services:
+  epoll_test:
+    image: zongzw/ccpp-build-image:latest
+    ports:
+      - 8080:8080
+    volumes:
+      - .:/root/epoll-test
