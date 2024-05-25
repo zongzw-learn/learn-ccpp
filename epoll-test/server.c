@@ -74,12 +74,12 @@ int main(int argc, char *argv[]) {
 				printf("starting to read data from socket.....................\n");
 				int num = 0;
 				while(1) { 
-					// 本来水平触发方式下不需要while循环将 fd中等饿内容全部读出的，
+					// 本来水平触发方式下不需要while循环将 fd中的所有内容全部读出的，
 					// 因为水平触发方式下，只要套接字中存在数据， epoll_wait 就会返回该事件。
 					// 但是因为要读取的数据可能会有截断的情况，所以要读取完整的客户端写入内容。
 					memset(buf, 0, BUF_SIZE);
 					// 这里采用BLOCKING的方式读取内容，可能是有问题的：
-					// 如果恰好上次读完了所有的内容，这次
+					// 如果恰好上次读完了所有的内容，这里会阻塞。
 					str_len=read(ep_events[i].data.fd, buf, BUF_SIZE); 
 					if(str_len==0) {
 						epoll_ctl(epfd, EPOLL_CTL_DEL, ep_events[i].data.fd, NULL);

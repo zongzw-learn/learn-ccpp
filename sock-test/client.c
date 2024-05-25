@@ -42,8 +42,8 @@ int main(int argc, char *argv[])
 	fgets(message, BUF_SIZE, stdin);
 	
 	write(sock, message, strlen(message));
-	
-	close(sock);
+	// closing immediately after 'write' may cause missing response from server.
+	close(sock); // closing may dismiss all server response, the 'read' from server side may return 0
 	return 0;
 }
 

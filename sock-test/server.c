@@ -7,7 +7,7 @@
 #include <arpa/inet.h>
 #include <errno.h>
 
-#define BUF_SIZE 100
+#define BUF_SIZE 32
 
 static void error_handling(char *buf);
 
@@ -48,17 +48,28 @@ int main(int argc, char *argv[]) {
 
     clnt_sock=accept(serv_sock, (struct sockaddr*)&clnt_adr, &adr_sz);
 
+    // int flag = fcntl(clnt_sock,F_GETFL,0);
+    // flag = flag&~O_NONBLOCK;
+
+    // if (fcntl(clnt_sock, F_SETFL, flag) < 0)//设置为阻塞态
+    //  {  
+    //     perror("fcntl F_SETFL fail"); 
+    //     close(clnt_sock);
+    //     return -1; 
+    //  }
+
     while (1) {
         memset(buf, 0, BUF_SIZE);
-        str_len=read(clnt_sock, buf, BUF_SIZE);
-        if (str_len == 0) {
+        str_len=read(clnt_sock, buf, BUF_SIZE-1);
+        if (str_len == 0) {  // 客户端socket 关闭会导致此分支
             printf("closing connection\n");
             close(clnt_sock);
             break;
         } else if (str_len < 0 ) {
             if (errno == EAGAIN) break;
         } else {
-            printf("-> %s\n", buf);
+            // 当str_len 恰好 === BUF_SIZE-1时，
+            printf("-> (%d) %s\n", str_len, buf);
         }
     }
 
